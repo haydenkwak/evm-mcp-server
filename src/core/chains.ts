@@ -1,4 +1,4 @@
-import { type Chain } from 'viem';
+import { type Chain, defineChain } from 'viem';
 import {
   // Mainnets
   mainnet,
@@ -60,6 +60,37 @@ import {
   filecoinCalibration
 } from 'viem/chains';
 
+/** ──────────────────────────────────────────────────────────────────────
+ * Kaia custom chains (viem defineChain)
+ * ────────────────────────────────────────────────────────────────────── */
+export const kaia: Chain = defineChain({
+  id: 8217,
+  name: 'Kaia',
+  nativeCurrency: { name: 'KAIA', symbol: 'KAIA', decimals: 18 },
+  rpcUrls: {
+    default: { http: ['https://public-en.node.kaia.io'] },
+    public:  { http: ['https://public-en.node.kaia.io'] },
+  },
+  blockExplorers: {
+    default: { name: 'KaiaScan', url: 'https://kaiascan.io' },
+  },
+  testnet: false,
+});
+
+export const kairos: Chain = defineChain({
+  id: 1001,
+  name: 'Kaia Kairos Testnet',
+  nativeCurrency: { name: 'KAIA', symbol: 'KAIA', decimals: 18 },
+  rpcUrls: {
+    default: { http: ['https://public-en-kairos.node.kaia.io'] },
+    public:  { http: ['https://public-en-kairos.node.kaia.io'] },
+  },
+  blockExplorers: {
+    default: { name: 'KaiaScan (Kairos)', url: 'https://kairos.kaiascan.io' },
+  },
+  testnet: true,
+});
+
 // Default configuration values
 export const DEFAULT_RPC_URL = 'https://eth.llamarpc.com';
 export const DEFAULT_CHAIN_ID = 1;
@@ -98,7 +129,9 @@ export const chainMap: Record<number, Chain> = {
   1313161554: aurora,
   7700: canto,
   747: flowMainnet,
-  
+  /** added */
+  8217: kaia,
+
   // Testnets
   11155111: sepolia,
   11155420: optimismSepolia,
@@ -124,6 +157,8 @@ export const chainMap: Record<number, Chain> = {
   17000: holesky,
   545: flowTestnet,
   314159: filecoinCalibration,
+  /** added */
+  1001: kairos,
 };
 
 // Map network names to chain IDs for easier reference
@@ -172,7 +207,9 @@ export const networkNameMap: Record<string, number> = {
   'aurora': 1313161554,
   'canto': 7700,
   'flow': 747,
-  
+  /** added */
+  'kaia': 8217,
+
   // Testnets
   'sepolia': 11155111,
   'optimism-sepolia': 11155420,
@@ -218,6 +255,8 @@ export const networkNameMap: Record<string, number> = {
   'holesky': 17000,
   'flow-testnet': 545,
   'filecoin-calibration': 314159,
+  /** added */
+  'kairos': 1001,
 };
 
 // Map chain IDs to RPC URLs
@@ -254,7 +293,9 @@ export const rpcUrlMap: Record<number, string> = {
   1313161554: 'https://mainnet.aurora.dev',
   7700: 'https://canto.gravitychain.io',
   747: 'https://mainnet.evm.nodes.onflow.org',
-  
+  /** added */
+  8217: 'https://public-en.node.kaia.io',
+
   // Testnets
   11155111: 'https://sepolia.drpc.org',
   11155420: 'https://sepolia.optimism.io',
@@ -280,6 +321,8 @@ export const rpcUrlMap: Record<number, string> = {
   17000: 'https://ethereum-holesky.publicnode.com',
   545: 'https://testnet.evm.nodes.onflow.org',
   314159: 'https://api.calibration.node.glif.io/rpc/v1',
+  /** added */
+  1001: 'https://public-en-kairos.node.kaia.io',
 };
 
 /**
@@ -323,11 +366,9 @@ export function getChain(chainIdentifier: number | string = DEFAULT_CHAIN_ID): C
     if (networkNameMap[networkName]) {
       return chainMap[networkNameMap[networkName]] || mainnet;
     }
-    
     // If not found, throw an error
     throw new Error(`Unsupported network: ${chainIdentifier}`);
   }
-  
   // If it's a number, return the chain from chainMap
   return chainMap[chainIdentifier] || mainnet;
 }
@@ -353,4 +394,4 @@ export function getSupportedNetworks(): string[] {
   return Object.keys(networkNameMap)
     .filter(name => name.length > 2) // Filter out short aliases
     .sort();
-} 
+}
